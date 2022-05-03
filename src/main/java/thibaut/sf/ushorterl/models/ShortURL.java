@@ -3,21 +3,32 @@ package thibaut.sf.ushorterl.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Document("ushorterl")
-public class ShortURL {
+public class ShortURL extends AbstractShortURL {
     @Id
-    private String shortURL;
-    private String fullURL;
-    private Date dateCreated;
-    private int nbAccess;
+    @NotBlank
+    protected String shortURL;
+    @NotBlank
+    protected Date dateCreated;
+    @NotBlank
+    protected int nbAccess;
 
-    public ShortURL(String shortURL, String fullURL, Date dateCreated, int nbAccess) {
+    public ShortURL() {
+        super();
+    }
+
+    public ShortURL(String fullURL, String shortURL, Date dateCreated, int nbAccess) {
+        super(fullURL);
         this.shortURL = shortURL;
         this.dateCreated = dateCreated;
-        this.fullURL = fullURL;
         this.nbAccess = nbAccess;
+    }
+
+    public ShortURL(String fullURL, String key) {
+        this(fullURL, key, new Date(), 0);
     }
 
     public String getShortURL() {
@@ -26,14 +37,6 @@ public class ShortURL {
 
     public void setShortURL(String shortURL) {
         this.shortURL = shortURL;
-    }
-
-    public String getFullURL() {
-        return this.fullURL;
-    }
-
-    public void setFullURL(String fullURL) {
-        this.fullURL = fullURL;
     }
 
     public int getNbAccess() {

@@ -1,5 +1,10 @@
 package thibaut.sf.ushorterl.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -8,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import thibaut.sf.ushorterl.kgs.exceptions.OutOfKeysException;
 import thibaut.sf.ushorterl.models.Key;
 import thibaut.sf.ushorterl.models.ShortURL;
+import thibaut.sf.ushorterl.models.ShortURLParameter;
 import thibaut.sf.ushorterl.services.KeyService;
 import thibaut.sf.ushorterl.services.ShortURLService;
 
@@ -29,9 +35,46 @@ public class UshorterlController {
      * @param id
      * @return
      */
+    @Operation(summary = "Get infos about a short URL")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "shortURL infos",
+                    content = {@Content(schema = @Schema(implementation = ShortURL.class))}),
+            @ApiResponse(responseCode = "404", description = "Unknown shortURL",
+                    content = @Content)})
+    @RequestMapping(value = "/url_info/{id}", method = RequestMethod.GET)
+    public ResponseEntity<ShortURL> getShortURLInfos(@PathVariable("id") String id) {
+        ShortURL shortURL = shorturlService.getShortURL(id);
+
+        if (shortURL == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(shortURL);
+    }
+
+    /**
+     * @param id
+     * @return
+     */
+    @Operation(summary = "Get short URL (redirect)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirection to full URL",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Unknown shortURL",
+                    content = @Content)})
     @RequestMapping(value = "/short_url/{id}", method = RequestMethod.GET)
     public ResponseEntity<Void> getShortURL(@PathVariable("id") String id) {
         ShortURL shortURL = shorturlService.getShortURL(id);
+
+        if (shortURL == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
 
         shortURL.setNbAccess(shortURL.getNbAccess() + 1);
 
@@ -43,35 +86,32 @@ public class UshorterlController {
     }
 
     /**
-     * @param id
+     * @param shortURLParameter
      * @return
      */
-    @RequestMapping(value = "/url_info/{id}", method = RequestMethod.GET)
-    public ResponseEntity<ShortURL> getShortURLInfos(@PathVariable("id") String id) {
-        ShortURL shortURL = shorturlService.getShortURL(id);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(shortURL);
-    }
-
-    /**
-     * @return
-     */
+    @Operation(summary = "Create a new short URL")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "shortURL created",
+                    content = {@Content(schema = @Schema(implementation = ShortURL.class))}),
+            @ApiResponse(responseCode = "400", description = "fullURL parameter is missing",
+                    content = @Content),
+            @ApiResponse(responseCode = "503", description = "Limit of short URL reached on this server",
+                    content = @Content)})
     @RequestMapping(value = "/short_url/",
             method = RequestMethod.POST,
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<ShortURL> postShortURL(@RequestBody ShortURL newShortUrl) {
-        String fullURL = newShortUrl.getFullURL();
+    public ResponseEntity<ShortURL> postShortURL(@RequestBody ShortURLParameter shortURLParameter) {
+        String fullURL = shortURLParameter.getFullURL().trim();
 
-        if (fullURL.trim().length() == 0) {
+        if (fullURL.length() == 0) {
             return ResponseEntity.badRequest().body(null);
         }
 
         try {
             Key key = keyService.getUnusedKey();
 
+            ShortURL newShortUrl = new ShortURL(fullURL, key.getKey());
             newShortUrl.setShortURL(key.getKey());
             newShortUrl.setDateCreated(new Date());
             newShortUrl.setNbAccess(0);
@@ -80,28 +120,47 @@ public class UshorterlController {
 
             key.setUsed(true);
             keyService.saveKey(key);
-        } catch (OutOfKeysException e) {
-            throw new RuntimeException(e);
-        }
 
-        return ResponseEntity
-                .created(URI.create(String.format("/short_url/%s", newShortUrl.getShortURL())))
-                .body(newShortUrl);
+            return ResponseEntity
+                    .created(URI.create(String.format("/short_url/%s", newShortUrl.getShortURL())))
+                    .body(newShortUrl);
+        } catch (OutOfKeysException e) {
+            return ResponseEntity
+                    .status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(null);
+        }
     }
 
     /**
      * @param id
      * @return
      */
-    @RequestMapping(value = "/short_url/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<ShortURL> putShortURL(@PathVariable("id") String id, @RequestBody ShortURL newShortUrl) {
-        String fullURL = newShortUrl.getFullURL();
+    @Operation(summary = "Update short URL")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "shortURL updated",
+                    content = {@Content(schema = @Schema(implementation = ShortURL.class))}),
+            @ApiResponse(responseCode = "400", description = "fullURL parameter is missing",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Unknown shortURL",
+                    content = @Content)})
+    @RequestMapping(value = "/short_url/{id}",
+            method = RequestMethod.PUT,
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<ShortURL> putShortURL(@PathVariable("id") String id, @RequestBody ShortURLParameter newShortUrl) {
+        ShortURL shortURL = shorturlService.getShortURL(id);
 
-        if (fullURL.trim().length() == 0) {
-            return ResponseEntity.badRequest().body(null);
+        if (shortURL == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
         }
 
-        ShortURL shortURL = shorturlService.getShortURL(id);
+        String fullURL = newShortUrl.getFullURL().trim();
+
+        if (fullURL.length() == 0) {
+            return ResponseEntity.badRequest().body(null);
+        }
 
         shortURL.setFullURL(fullURL);
 
@@ -118,6 +177,7 @@ public class UshorterlController {
      */
     @RequestMapping(value = "/short_url/{id}", method = RequestMethod.DELETE)
     public String deleteShortURL(@PathVariable("id") String id) {
+        //TODO
         return null;
     }
 }
