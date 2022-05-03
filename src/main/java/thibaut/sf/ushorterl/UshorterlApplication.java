@@ -5,10 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class UshorterlApplication {
-
     public static void main(String[] args) {
-        //TODO check KGS
-
         SpringApplication.run(UshorterlApplication.class, args);
     }
 }

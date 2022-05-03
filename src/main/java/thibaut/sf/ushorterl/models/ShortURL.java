@@ -1,13 +1,11 @@
-package thibaut.sf.ushorterl.model;
+package thibaut.sf.ushorterl.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.nio.ByteBuffer;
-import java.util.Base64;
 import java.util.Date;
 
-@Document
+@Document("ushorterl")
 public class ShortURL {
     @Id
     private String shortURL;
@@ -15,10 +13,11 @@ public class ShortURL {
     private Date dateCreated;
     private int nbAccess;
 
-    public ShortURL(String fullURL) {
-        this.shortURL = Base64.getEncoder().encodeToString(ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(System.currentTimeMillis()).array());
+    public ShortURL(String shortURL, String fullURL, Date dateCreated, int nbAccess) {
+        this.shortURL = shortURL;
+        this.dateCreated = dateCreated;
         this.fullURL = fullURL;
-        this.nbAccess = 0;
+        this.nbAccess = nbAccess;
     }
 
     public String getShortURL() {

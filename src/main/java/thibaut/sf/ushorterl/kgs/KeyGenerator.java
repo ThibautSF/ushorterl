@@ -3,8 +3,8 @@ package thibaut.sf.ushorterl.kgs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import thibaut.sf.ushorterl.model.Key;
-import thibaut.sf.ushorterl.repository.KeyRepository;
+import thibaut.sf.ushorterl.models.Key;
+import thibaut.sf.ushorterl.repositories.KeyRepository;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
