@@ -48,11 +48,13 @@ public class KeyGenerator {
     public void postConstruct() {
         //Generate list of keys during first launch
         if (keyRepository.count() == 0) {
+            System.out.println("No keys in KGS, starting generation");
+
             List<Key> keys = new ArrayList<>();
             generateKeys(keys, Integer.parseInt(env.getProperty("kgs.keySize")));
             keyRepository.saveAll(keys);
-        }
 
-        System.out.println(keyRepository.count());
+            System.out.println("KGS generation END");
+        }
     }
 }
