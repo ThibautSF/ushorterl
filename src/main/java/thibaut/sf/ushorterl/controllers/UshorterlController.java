@@ -32,7 +32,7 @@ public class UshorterlController {
     private ShortURLService shorturlService;
 
     /**
-     * @param id
+     * @param keystr
      * @return
      */
     @Operation(summary = "Get infos about a short URL")
@@ -41,10 +41,13 @@ public class UshorterlController {
                     content = {@Content(schema = @Schema(implementation = ShortURL.class))}),
             @ApiResponse(responseCode = "404", description = "Unknown shortURL",
                     content = @Content)})
-    @RequestMapping(value = "/url_info/{id}", method = RequestMethod.GET)
-    public ResponseEntity<ShortURL> getShortURLInfos(@PathVariable("id") String id) {
-        ShortURL shortURL = shorturlService.getShortURL(id);
+    @RequestMapping(value = "/url_info/{id}",
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<ShortURL> getShortURLInfos(@PathVariable("keystr") String keystr) {
+        ShortURL shortURL = shorturlService.getShortURL(keystr);
 
+        //Check if short URL exists
         if (shortURL == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -57,7 +60,7 @@ public class UshorterlController {
     }
 
     /**
-     * @param id
+     * @param keystr
      * @return
      */
     @Operation(summary = "Get short URL (redirect)")
@@ -67,9 +70,10 @@ public class UshorterlController {
             @ApiResponse(responseCode = "404", description = "Unknown shortURL",
                     content = @Content)})
     @RequestMapping(value = "/short_url/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Void> getShortURL(@PathVariable("id") String id) {
-        ShortURL shortURL = shorturlService.getShortURL(id);
+    public ResponseEntity<Void> getShortURL(@PathVariable("keystr") String keystr) {
+        ShortURL shortURL = shorturlService.getShortURL(keystr);
 
+        //Check if short URL exists
         if (shortURL == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -132,7 +136,8 @@ public class UshorterlController {
     }
 
     /**
-     * @param id
+     * @param keystr
+     * @param newShortUrl
      * @return
      */
     @Operation(summary = "Update short URL")
@@ -147,9 +152,10 @@ public class UshorterlController {
             method = RequestMethod.PUT,
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<ShortURL> putShortURL(@PathVariable("id") String id, @RequestBody ShortURLParameter newShortUrl) {
-        ShortURL shortURL = shorturlService.getShortURL(id);
+    public ResponseEntity<ShortURL> putShortURL(@PathVariable("keystr") String keystr, @RequestBody ShortURLParameter newShortUrl) {
+        ShortURL shortURL = shorturlService.getShortURL(keystr);
 
+        //Check if short URL exists
         if (shortURL == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -172,12 +178,40 @@ public class UshorterlController {
     }
 
     /**
-     * @param id
+     * @param keystr
      * @return
      */
-    @RequestMapping(value = "/short_url/{id}", method = RequestMethod.DELETE)
-    public String deleteShortURL(@PathVariable("id") String id) {
-        //TODO
-        return null;
+    @Operation(summary = "Update short URL")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "shortURL deleted",
+                    content = {@Content(schema = @Schema(implementation = ShortURL.class))}),
+            @ApiResponse(responseCode = "404", description = "Unknown shortURL",
+                    content = @Content)})
+    @RequestMapping(value = "/short_url/{keystr}",
+            method = RequestMethod.DELETE,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<ShortURL> deleteShortURL(@PathVariable("keystr") String keystr) {
+        ShortURL shortURL = shorturlService.getShortURL(keystr);
+
+        //Check if short URL exists
+        if (shortURL == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+
+        //Retrieve key
+        Key key = keyService.getKey(keystr);
+
+        //Delete shortURL
+        shorturlService.deleteShortURL(shortURL);
+
+        //Reset key to unused status
+        key.setUsed(false);
+        keyService.saveKey(key);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(shortURL);
     }
 }

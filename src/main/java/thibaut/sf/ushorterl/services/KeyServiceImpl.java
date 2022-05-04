@@ -1,6 +1,7 @@
 package thibaut.sf.ushorterl.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import thibaut.sf.ushorterl.kgs.exceptions.OutOfKeysException;
 import thibaut.sf.ushorterl.models.Key;
@@ -28,7 +29,7 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public Key getUnusedKey() throws OutOfKeysException {
-        List<Key> keys = keyRepository.findByUsed(false, null);
+        List<Key> keys = keyRepository.findByUsed(false, PageRequest.ofSize(1000));
 
         SecureRandom rand = new SecureRandom();
 
@@ -37,5 +38,10 @@ public class KeyServiceImpl implements KeyService {
         }
 
         return keys.get(rand.nextInt(keys.size()));
+    }
+
+    @Override
+    public Key getKey(String keystr) {
+        return keyRepository.findByKey(keystr);
     }
 }

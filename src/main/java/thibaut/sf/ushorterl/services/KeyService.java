@@ -10,4 +10,6 @@ public interface KeyService {
     Key saveKey(Key key);
 
     Key getUnusedKey() throws OutOfKeysException;
+
+    Key getKey(String Key);
 }

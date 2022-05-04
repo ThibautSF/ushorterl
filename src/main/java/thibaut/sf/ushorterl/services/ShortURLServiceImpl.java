@@ -22,6 +22,11 @@ public class ShortURLServiceImpl implements ShortURLService {
 
         return response;
     }
+    
+    @Override
+    public void deleteShortURL(ShortURL shortURL) {
+        shortURLRepository.delete(shortURL);
+    }
 
     @Override
     public ShortURL getShortURL(Key key) {

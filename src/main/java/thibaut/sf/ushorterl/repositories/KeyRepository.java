@@ -9,5 +9,7 @@ import java.util.List;
 
 @Repository
 public interface KeyRepository extends PagingAndSortingRepository<Key, String> {
+    Key findByKey(String key);
+
     List<Key> findByUsed(boolean used, Pageable pageable);
 }

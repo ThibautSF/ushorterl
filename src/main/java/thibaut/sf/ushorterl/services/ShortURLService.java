@@ -9,6 +9,8 @@ public interface ShortURLService {
 
     ShortURL saveShortURL(ShortURL shortURL);
 
+    void deleteShortURL(ShortURL shortURL);
+
     ShortURL getShortURL(Key key);
 
     ShortURL getShortURL(String keystr);
