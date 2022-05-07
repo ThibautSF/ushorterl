@@ -46,4 +46,4 @@ exercise presentation.*
 
 - Accessing exercise description (in French) `<serverurl>/exercise.html`
 - Accessing APIDoc `<serverurl>/swagger-ui/index.html`
-- Accessing JavaDoc `<serverurl>/javadoc/index.html` (if built/run with `javadoc:javadoc` maven goal)
+- Accessing JavaDoc `<serverurl>/apidoc/index.html` (if built/run with `javadoc:javadoc` maven goal)

@@ -57,7 +57,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <destDir>../../classes/static/javadoc</destDir>
+                    <reportOutputDirectory>${project.build.directory}/classes/static/</reportOutputDirectory>
                 </configuration>
             </plugin>
             <plugin>
