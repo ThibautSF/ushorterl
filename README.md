@@ -19,9 +19,31 @@ docker run -it -p 8080:8080 \
 -e USHORTERL_KEY_SIZE=3 \
 -v ushorterl_volume:/workspace/ \
 --name ushorterl \
-ushorterl:0.0.1-SNAPSHOT
+ushorterl:0.0.1
 ```
 
-## Build
+## Run / Build from source
 
-TODO
+### Run
+
+```shell
+mvn javadoc:javadoc spring-boot:run
+```
+
+*Note: `javadoc:javadoc` goal is optional, just here to package into API server for the only purpose of easy access for
+exercise presentation.*
+
+### Build
+
+```shell
+mvn javadoc:javadoc spring-boot:build-image
+```
+
+*Note: `javadoc:javadoc` goal is optional, just here to package into API server for the only purpose of easy access for
+exercise presentation.*
+
+## Info
+
+- Accessing exercise description (in French) `<serverurl>/exercise.html`
+- Accessing APIDoc `<serverurl>/swagger-ui/index.html`
+- Accessing JavaDoc `<serverurl>/javadoc/index.html` (if built/run with `javadoc:javadoc` maven goal)

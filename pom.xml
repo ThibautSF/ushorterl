@@ -10,7 +10,7 @@
     </parent>
     <groupId>thibaut.sf</groupId>
     <artifactId>ushorterl</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>ushorterl</name>
     <description>URL shorter API</description>
     <properties>
@@ -52,6 +52,14 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <destDir>../../classes/static/javadoc</destDir>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

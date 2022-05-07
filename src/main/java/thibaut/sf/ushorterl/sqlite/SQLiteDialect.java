@@ -1,4 +1,4 @@
-package thibaut.sf.ushorterl.kgs.sqlite;
+package thibaut.sf.ushorterl.sqlite;
 
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
@@ -7,7 +7,7 @@ import java.sql.Types;
 
 /**
  * @author eugenp/Baeldung
- * @link https://github.com/eugenp/tutorials/blob/master/persistence-modules/spring-data-rest/src/main/java/com/baeldung/books/dialect/
+ * @see <a href="https://github.com/eugenp/tutorials/blob/master/persistence-modules/spring-data-rest/src/main/java/com/baeldung/books/dialect/">source</a>
  */
 public class SQLiteDialect extends Dialect {
 

@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import thibaut.sf.ushorterl.kgs.exceptions.OutOfKeysException;
+import thibaut.sf.ushorterl.exceptions.OutOfKeysException;
 import thibaut.sf.ushorterl.models.Key;
 import thibaut.sf.ushorterl.models.ShortURL;
 import thibaut.sf.ushorterl.models.ShortURLParameter;
@@ -21,19 +21,30 @@ import java.net.URI;
 import java.util.Date;
 
 /**
+ * Main REST Controller
  *
+ * @author ThibautSF
+ * @version 1.0
  */
 @RestController
 public class UshorterlController {
+    /**
+     * Key Generation System service
+     */
     @Autowired
     private KeyService keyService;
 
+    /**
+     * ShortURL service
+     */
     @Autowired
     private ShortURLService shorturlService;
 
     /**
-     * @param keystr
-     * @return
+     * Get infos about a short URL
+     *
+     * @param keystr the short URL key string
+     * @return An HTTP response with ShortURL object
      */
     @Operation(summary = "Get infos about a short URL")
     @ApiResponses(value = {
@@ -60,8 +71,10 @@ public class UshorterlController {
     }
 
     /**
-     * @param keystr
-     * @return
+     * Get short URL (redirect)
+     *
+     * @param keystr the short URL key string
+     * @return An HTTP response with redirection to long URL
      */
     @Operation(summary = "Get short URL (redirect)")
     @ApiResponses(value = {
@@ -90,8 +103,13 @@ public class UshorterlController {
     }
 
     /**
-     * @param shortURLParameter
-     * @return
+     * Create a new short URL
+     * <p>
+     * Get a random key, associate it with URL and flag key as used
+     * </p>
+     *
+     * @param shortURLParameter the new url parameters
+     * @return An HTTP response with ShortURL object created
      */
     @Operation(summary = "Create a new short URL")
     @ApiResponses(value = {
@@ -136,9 +154,11 @@ public class UshorterlController {
     }
 
     /**
-     * @param keystr
-     * @param newShortUrl
-     * @return
+     * Update short URL
+     *
+     * @param keystr           the short URL key string
+     * @param newShortUrlParam the new url parameters
+     * @return An HTTP response with ShortURL object updated
      */
     @Operation(summary = "Update short URL")
     @ApiResponses(value = {
@@ -152,7 +172,7 @@ public class UshorterlController {
             method = RequestMethod.PUT,
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<ShortURL> putShortURL(@PathVariable("keystr") String keystr, @RequestBody ShortURLParameter newShortUrl) {
+    public ResponseEntity<ShortURL> putShortURL(@PathVariable("keystr") String keystr, @RequestBody ShortURLParameter newShortUrlParam) {
         ShortURL shortURL = shorturlService.getShortURL(keystr);
 
         //Check if short URL exists
@@ -162,7 +182,7 @@ public class UshorterlController {
                     .body(null);
         }
 
-        String fullURL = newShortUrl.getFullURL().trim();
+        String fullURL = newShortUrlParam.getFullURL().trim();
 
         if (fullURL.length() == 0) {
             return ResponseEntity.badRequest().body(null);
@@ -178,10 +198,15 @@ public class UshorterlController {
     }
 
     /**
-     * @param keystr
-     * @return
+     * Delete short URL.
+     * <p>
+     * Reset associated key to unused
+     * </p>
+     *
+     * @param keystr the short URL key string
+     * @return An HTTP response with ShortURL object deleted
      */
-    @Operation(summary = "Update short URL")
+    @Operation(summary = "Delete short URL")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "shortURL deleted",
                     content = {@Content(schema = @Schema(implementation = ShortURL.class))}),
