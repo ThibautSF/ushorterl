@@ -52,7 +52,7 @@ public class UshorterlController {
                     content = {@Content(schema = @Schema(implementation = ShortURL.class))}),
             @ApiResponse(responseCode = "404", description = "Unknown shortURL",
                     content = @Content)})
-    @RequestMapping(value = "/url_info/{id}",
+    @RequestMapping(value = "/url_info/{keystr}",
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<ShortURL> getShortURLInfos(@PathVariable("keystr") String keystr) {
@@ -82,7 +82,7 @@ public class UshorterlController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Unknown shortURL",
                     content = @Content)})
-    @RequestMapping(value = "/short_url/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/short_url/{keystr}", method = RequestMethod.GET)
     public ResponseEntity<Void> getShortURL(@PathVariable("keystr") String keystr) {
         ShortURL shortURL = shorturlService.getShortURL(keystr);
 
@@ -168,7 +168,7 @@ public class UshorterlController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Unknown shortURL",
                     content = @Content)})
-    @RequestMapping(value = "/short_url/{id}",
+    @RequestMapping(value = "/short_url/{keystr}",
             method = RequestMethod.PUT,
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
