@@ -26,7 +26,7 @@ ushorterl:0.0.1
 
 ## From source
 
-### Run
+### Run src
 
 ```shell
 mvn javadoc:javadoc spring-boot:run
@@ -35,7 +35,7 @@ mvn javadoc:javadoc spring-boot:run
 *Note: `javadoc:javadoc` goal is optional, just here to package into API server for the only purpose of easy access for
 exercise presentation.*
 
-### Build
+### Build src
 
 ```shell
 mvn javadoc:javadoc spring-boot:build-image
@@ -49,8 +49,8 @@ exercise presentation.*
 - Accessing exercise description (in
   French) `<serverurl>/exercise.html`: [latest online](http://34.155.28.95:8080/exercise.html)
 - Accessing APIDoc `<serverurl>/swagger-ui/index.html`: [latest online](http://34.155.28.95:8080/swagger-ui/index.html)
-- Accessing JavaDoc `<serverurl>/apidoc/index.html` (if built/run with `javadoc:javadoc` maven
-  goal): [latest online](http://34.155.28.95:8080/apidoc/index.html)
+- Accessing JavaDoc `<serverurl>/apidocs/index.html` (if built/run with `javadoc:javadoc` maven
+  goal): [latest online](http://34.155.28.95:8080/apidocs/index.html)
 
 ## About project and code
 
@@ -89,13 +89,13 @@ encountered some issues and drawbacks, I preferred to not lose too much focus ti
 put code under one main package. But with more time, I would definitely improve that.
 
 - thibaut.sf.ushorterl (app package)
-    - controllers
-    - exceptions
-    - kgs (Key Generation Service)
-    - models
-    - repositories
-    - services
-    - sqlite (for hibernate dialect)
+  - controllers
+  - exceptions
+  - kgs (Key Generation Service)
+  - models
+  - repositories
+  - services
+  - sqlite (for hibernate dialect)
 
 ### Persistence
 
